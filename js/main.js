@@ -1,14 +1,20 @@
-const canvas = document.querySelector('canvas');
+// ALL SCRIPTS GOES HERE
 
+// CALLING THE CANVAS
+const canvas = document.querySelector('canvas');
 canvas.width = innerWidth;
 canvas.height = innerHeight;
-// THIS THING IS LIKE A COMMAND FOR EVERY FUNCTION
+
+
+// SETTING A VARIABLE TO CANVAS GETCONTEXT METHOD
 const ctx = canvas.getContext('2d');
 
+
+// VARIABLE FOR BOTH WIDTH AND HEIGHT
 const canvasWidth = canvas.width;
 const canvasHeight = canvas.height;
-ctx.fillStyle = 'orange';
 
+// ASSIGNING A BACKGROUND COLOR FOR THE CANVAS
 canvas.style.background = 'rgb(37, 37, 37)';
 
 
@@ -28,7 +34,7 @@ let player = {
 
 
 // THIS CLASS IS USED TO CREATE NEW BLOCK BOTH IN FLOOR AND CEILING
-class Floor {
+class Block {
     constructor(_posX, _posY){
         this._posX = _posX;
         this._posY = _posY;
@@ -45,7 +51,7 @@ class Floor {
 // ADING INITAL ELEMENTS TO FLOORARRAY
 let floorArray = []
 for (let i = 0; i < 4; i++) {
-    let ourFloor = new Floor((canvasWidth/4) * i,canvasHeight - 120);
+    let ourFloor = new Block((canvasWidth/4) * i,canvasHeight - 120);
     floorArray.push(ourFloor);
 }
 
@@ -53,11 +59,13 @@ for (let i = 0; i < 4; i++) {
 // ADDING INITAL ELEMENTS TO CEILINGARRAY
 let ceilingArray= [];
 for (let i = 0; i < 4; i++) {
-    let ourFloor = new Floor((canvasWidth/4) * i, 0);
+    let ourFloor = new Block((canvasWidth/4) * i, 0);
     ceilingArray.push(ourFloor);
 }
 
 
+
+// THIS FUNCTION IS RESPONSIBLE FOR MAKING THE RANDOM APPEARANCE OF THE HOLES
 function generateFloor(mode, block) {
     if(mode === 'easy') {
         if (Math.random() < 0.2) {
@@ -69,6 +77,8 @@ function generateFloor(mode, block) {
 }
 
 
+
+// A FUNCTION THAT REFRESHES THE SCREEN TO ALLOW DERAWING
 function clearScreen() {
     ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 }
@@ -118,6 +128,7 @@ function newCeilingPos() {
 }
 
 
+// INITALIZING THE SCORE TO 0
 let score = 0;
 
 let scoreCard = document.querySelector('.score');
@@ -131,15 +142,19 @@ function scoreUpdate() {
 
 
 let Game = false;
-// ON CLICK THE START BUTTON THE GAME SHOULD CONTINUE
 
+// ON CLICK THE START BUTTON THE GAME SHOULD CONTINUE
 const startBtn = document.querySelector('.start-btn');
+
 const playerInfo = document.querySelector('.player-info');
 
 const playerName = document.querySelector('#player');
 
-let body = document.querySelector('body');
+const body = document.querySelector('body');
 
+
+
+// BUTTON TO START THE GAME
 startBtn.addEventListener('click', ()=> {
     Game = true;
     let name = playerName.value;
@@ -148,16 +163,15 @@ startBtn.addEventListener('click', ()=> {
 
     body.style.overflow = 'hidden';
     update();
-
 })
 
 
 
+// TO CHECK IF THE PLAYER IS IN VTN THE HOLE OR NOT
 function checkGame() {
     if(player.side === 'floor') {
         for (let i = 0; i < floorArray.length; i++) {
             if(floorArray[i].status === 'hole') {
-                // console.log(player.posX + player.width, floorArray[i]._posX + floorArray[i]._width);
                 if(player.posX + player.width < floorArray[i]._posX + floorArray[i]._width && player.posX > floorArray[i]._posX) {
                     console.log('gameOver');
                     Game = false;
@@ -188,7 +202,6 @@ function update() {
         drawceiling();
         drawFloor();
         
-
         // ADDING THE DX AND DY IN FUNCTIONS
         newCeilingPos();
         newPlayerPos();
@@ -196,9 +209,6 @@ function update() {
         
 
         // ALL CHECKING CONDITIONS GOES HERE
-
-        // THESE 10 ARE FOR SOME SMALL FIXES AS THE UPDATE ITSELF CAN DETECT IT WHEN 
-        // PLAYER MOVES AT SUCH A HIGH SPEED
         if (player.posY < 120) {
             player.posY = 120;
             player.dy = 0;
@@ -210,10 +220,9 @@ function update() {
         }
 
 
-        // FOR THE FLOOR AND CEILING MOVEMENTS
-
+        // FOR THE FLOOR  MOVEMENTS
         if(floorArray[0]._posX < 0 && floorArray.length === 4) {
-            let newFloor = new Floor(canvasWidth - 5, canvasHeight - 120);
+            let newFloor = new Block(canvasWidth - 5, canvasHeight - 120);
 
             // THE MAKE IT RANDOM FUNCTION PLAYER ITS ROLE HERE
             newFloor = generateFloor('easy', newFloor);
@@ -226,9 +235,9 @@ function update() {
 
 
 
-        
+        // FOR CEILING MOVEMENTS
         if(ceilingArray[0]._posX < 0 && ceilingArray.length === 4) {
-            let newFloor = new Floor(canvasWidth - 5, 0);
+            let newFloor = new Block(canvasWidth - 5, 0);
 
             // THE MAKE IT RANDOM FUNCTION PLAYER ITS ROLE HERE
             newFloor = generateFloor('easy', newFloor);
@@ -258,20 +267,14 @@ function update() {
         playerInfo.appendChild(gamerOver);
         gamerOver.style.order = '-1';
 
+
+        // TO MAKE THE BODY SCROLLABLE AGAIN AFTER GAME OVER
         body.style.overflowY = 'scroll';
-
-
-        // Game = true;
-        // let name = playerName.value;
-        // localStorage.setItem(name, '0');
-        // playerInfo.style.display = 'none';
-        // update();
-        
     }
 }
 
 
-
+// PLAYER VERTICAL MOVEMENT FUNCTION
 function moveUp() {
     player.dy = player.speed*-1;
     player.side = 'ceiling';
@@ -284,6 +287,7 @@ function moveDown() {
 
 
 
+// EVENT LISTENERS FOR BOTH CLICK AND SPACEBAR
 function keyDownMoves(e) {
     if(e.key === ' ' && player.side === 'floor') {
         moveUp();
@@ -320,7 +324,6 @@ function setScore() {
 
 
 // NOW TO RENDER PREVIOUS PLAYERS SCORE
-
 function renderScoreBoard(name, score) {
     let scoreRowDiv = document.createElement('div');
     scoreRowDiv.setAttribute('class', 'score-row');
@@ -341,6 +344,7 @@ function renderScoreBoard(name, score) {
 }
 
 
+// NOW RENDERING THE SCORES WITH ALL THE INFO WE HAVE
 for (let i = 0; i < Object.entries(localStorage).length; i++) {
     renderScoreBoard(Object.entries(localStorage)[i][0], Object.entries(localStorage)[i][1])
 }
